@@ -6,13 +6,15 @@ class DayThree(Solution):
 
     def __init__(self):
         self._setup('daythree')
+        self.schema = self.input.split('\n')
+        self.schema_width = len(self.schema[0])
+        self.schema_height = len(self.schema) - 1
 
     def part_one(self):
-        schema = self.input
-        schema_splitted = schema.split('\n')
-        self.schema = schema_splitted
-        self.schema_width = len(schema_splitted[0])
-        self.schema_height = len(schema_splitted) - 1
+        self.schema = self.input.split('\n')
+        self.schema_width = len(self.schema[0])
+        self.schema_height = len(self.schema) - 1
+        schema_splitted = self.schema
         num_st_idx = None
         num_en_inx = None
         part_nums_sum = 0
@@ -70,9 +72,72 @@ class DayThree(Solution):
 
         return False
 
-
-
     def part_two(self):
-        pass
+        self.schema = self.input.split('\n')
+        self.schema_width = len(self.schema[0])
+        self.schema_height = len(self.schema) - 1
+        self.gears = {}
+        num_st_idx = None
+        num_en_inx = None
+        for v_idx in range(0, self.schema_height):
+            in_num = False
+            for h_idx in range(0, self.schema_width):
+                if not in_num:
+                    if self.schema[v_idx][h_idx].isnumeric():
+                        num_st_idx = h_idx
+                        in_num = True
+                else:
+                    if not self.schema[v_idx][h_idx].isnumeric():
+                        num_en_inx = h_idx - 1
+                        in_num = False
+                        self.check_for_gears(v_idx, num_st_idx, num_en_inx)
+            if in_num:
+                num_en_inx = self.schema_width - 1
+                self.check_for_gears(v_idx, num_st_idx, num_en_inx)
+        return self.get_gear_ratios_sum(self.sanitize_gears(self.gears))
+
+    def sanitize_gears(self, gears):
+        values = gears.values()
+        return [value for value in values if len(value) == 2]
+
+    def get_gear_ratios_sum(self, gears):
+        sum = 0
+        for gear in gears:
+            print(gear)
+            sum += gear[0] * gear[1]
+        return sum
+
+    def check_for_gears(self, v_idx, st_idx, en_idx):
+        #up
+        if v_idx != 0:
+            for idx in range(max(st_idx - 1, 0), min(en_idx + 2, self.schema_width)):
+                if self.schema[v_idx - 1][idx] == '*':
+                    if self.gears.get(f'{v_idx - 1},{idx}'):
+                        self.gears[f'{v_idx - 1},{idx}'] += [self.get_num(v_idx, st_idx, en_idx)]
+                    else:
+                        self.gears[f'{v_idx - 1},{idx}'] = [self.get_num(v_idx, st_idx, en_idx)]
+        #down
+        if v_idx != self.schema_height - 1:
+            for idx in range(max(st_idx - 1, 0), min(en_idx + 2, self.schema_width)):
+                if self.schema[v_idx + 1][idx] == '*':
+                    if self.gears.get(f'{v_idx + 1},{idx}'):
+                        self.gears[f'{v_idx + 1},{idx}'] += [self.get_num(v_idx, st_idx, en_idx)]
+                    else:
+                        self.gears[f'{v_idx + 1},{idx}'] = [self.get_num(v_idx, st_idx, en_idx)]
+
+        #left
+        if self.schema[v_idx][max(st_idx - 1, 0)] == '*':
+            if self.gears.get(f'{v_idx},{max(st_idx - 1, 0)}'):
+                self.gears[f'{v_idx},{max(st_idx - 1, 0)}'] += [self.get_num(v_idx, st_idx, en_idx)]
+            else:
+                self.gears[f'{v_idx},{max(st_idx - 1, 0)}'] = [self.get_num(v_idx, st_idx, en_idx)]
+        #right
+        if self.schema[v_idx][min(en_idx + 1, self.schema_width - 1)] == '*':
+            if self.gears.get(f'{v_idx},{min(en_idx + 1, self.schema_width - 1)}'):
+                self.gears[f'{v_idx},{min(en_idx + 1, self.schema_width - 1)}'] += [self.get_num(v_idx, st_idx, en_idx)]
+            else:
+                self.gears[f'{v_idx},{min(en_idx + 1, self.schema_width - 1)}'] = [self.get_num(v_idx, st_idx, en_idx)]
+
+
 
 DayThree().run(sys.argv[1])
