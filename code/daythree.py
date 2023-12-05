@@ -28,6 +28,10 @@ class DayThree(Solution):
                         num_en_inx = h_idx - 1
                         in_num = False
                         part_nums_sum += self.get_addition(v_idx, num_st_idx, num_en_inx)
+            if in_num:
+                num_en_inx = self.schema_width - 1
+                part_nums_sum += self.get_addition(v_idx, num_st_idx, num_en_inx)
+
         return part_nums_sum
 
     def get_addition(self, v_idx, st_idx, en_idx):
@@ -45,13 +49,13 @@ class DayThree(Solution):
     def check_surroundings(self, v_idx, st_idx, en_idx) -> bool:
         #up
         if v_idx != 0:
-            for idx in range(max(st_idx - 1, 0), min(en_idx + 2, self.schema_width + 1)):
+            for idx in range(max(st_idx - 1, 0), min(en_idx + 2, self.schema_width)):
                 #print(f'({v_idx - 1}, {idx}) : {self.schema[v_idx -1][idx]}')
                 if self.schema[v_idx - 1][idx] != '.' and not self.schema[v_idx - 1][idx].isnumeric():
                     return True
         #down
         if v_idx != self.schema_height - 1:
-            for idx in range(max(st_idx - 1, 0), min(en_idx + 2, self.schema_width + 1)):
+            for idx in range(max(st_idx - 1, 0), min(en_idx + 2, self.schema_width)):
                 #print(f'({v_idx + 1}, {idx}) : {self.schema[v_idx +1][idx]}')
                 if self.schema[v_idx + 1][idx] != '.' and not self.schema[v_idx + 1][idx].isnumeric():
                     return True
@@ -61,7 +65,7 @@ class DayThree(Solution):
             return True
         #right
         #print(f'({v_idx}, {max(en_idx + 1, 0)}) : {self.schema[v_idx][max(en_idx + 1, 0)]}')
-        if self.schema[v_idx][min(en_idx + 1, self.schema_width)] != '.' and not self.schema[v_idx][min(en_idx + 1, self.schema_width)].isnumeric():
+        if self.schema[v_idx][min(en_idx + 1, self.schema_width - 1)] != '.' and not self.schema[v_idx][min(en_idx + 1, self.schema_width - 1)].isnumeric():
             return True
 
         return False
