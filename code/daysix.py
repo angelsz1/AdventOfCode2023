@@ -1,3 +1,4 @@
+from os import set_blocking
 import sys
 from solution import Solution
 from math import floor, ceil
@@ -30,6 +31,9 @@ class DaySix(Solution):
         return ceil(x1), floor(x2)
 
     def part_two(self):
-        pass
+        self.input = self.input.strip()
+        time, distance = [int(x.split(':')[1].replace(' ', '')) for x in self.input.split('\n')]
+        x1, x2 = self.get_roots(time, -distance)
+        return abs(x1 - x2) + 1
 
 DaySix().run(sys.argv[1])
